@@ -1775,7 +1775,189 @@
       window.scrollTo({top:0,behavior:'smooth'});
     }
 
+    // バリデーションエラー表示
+    function showError(message) {
+      alert(message);
+    }
+
+    // STEP1 バリデーション
+    function validateStep1() {
+      const corporateNumber = document.getElementById('corporateNumber').value.trim();
+      const companyName = document.getElementById('companyName').value.trim();
+      const establishedDate = document.getElementById('establishedDate').value;
+      const capital = document.getElementById('capital').value;
+      const representativeName = document.getElementById('representativeName').value.trim();
+
+      if (!corporateNumber || corporateNumber.length !== 13) {
+        showError('法人番号（13桁）を正しく入力してください');
+        return false;
+      }
+      if (!companyName) {
+        showError('法人名を入力してください');
+        return false;
+      }
+      if (!establishedDate) {
+        showError('設立年月日を入力してください');
+        return false;
+      }
+      if (!capital) {
+        showError('資本金を選択してください');
+        return false;
+      }
+      if (!representativeName) {
+        showError('代表者名を入力してください');
+        return false;
+      }
+      return true;
+    }
+
+    // STEP2 バリデーション
+    function validateStep2() {
+      const industry = document.getElementById('industry').value;
+      const businessDescription = document.getElementById('businessDescription').value.trim();
+      const businessYears = document.querySelector('input[name="businessYears"]:checked');
+      const annualRevenue = document.getElementById('annualRevenue').value;
+      const monthlyRevenue = document.getElementById('monthlyRevenue').value.trim();
+      const clientType = document.getElementById('clientType').value;
+      const hasWebsite = document.querySelector('input[name="hasWebsite"]:checked');
+      const officeType = document.querySelector('input[name="officeType"]:checked');
+      const accountType = document.querySelector('input[name="accountType"]:checked');
+
+      if (!industry) {
+        showError('業種を選択してください');
+        return false;
+      }
+      if (!businessDescription) {
+        showError('事業内容を入力してください');
+        return false;
+      }
+      if (!businessYears) {
+        showError('事業年数を選択してください');
+        return false;
+      }
+      if (!annualRevenue) {
+        showError('年商を選択してください');
+        return false;
+      }
+      if (!monthlyRevenue) {
+        showError('直近の月商を入力してください');
+        return false;
+      }
+      if (!clientType) {
+        showError('主な売掛先を選択してください');
+        return false;
+      }
+      if (!hasWebsite) {
+        showError('HP/Webサイトの有無を選択してください');
+        return false;
+      }
+      if (!officeType) {
+        showError('オフィス形態を選択してください');
+        return false;
+      }
+      if (!accountType) {
+        showError('売上管理口座を選択してください');
+        return false;
+      }
+      return true;
+    }
+
+    // STEP3 バリデーション
+    function validateStep3() {
+      const profitStatus = document.querySelector('input[name="profitStatus"]:checked');
+      const mainBank = document.getElementById('mainBank').value;
+      const fundUsage = document.getElementById('fundUsage').value;
+      const hasRevolving = document.querySelector('input[name="hasRevolving"]:checked');
+
+      if (!profitStatus) {
+        showError('直近の決算状況を選択してください');
+        return false;
+      }
+      if (!mainBank) {
+        showError('主要取引銀行を選択してください');
+        return false;
+      }
+      if (!fundUsage) {
+        showError('資金使途を選択してください');
+        return false;
+      }
+      if (!hasRevolving) {
+        showError('スマホ分割・リボ残高の有無を選択してください');
+        return false;
+      }
+      return true;
+    }
+
+    // STEP4 バリデーション
+    function validateStep4() {
+      const hasHomeLoan = document.querySelector('input[name="hasHomeLoan"]:checked');
+      const personalLoan = document.querySelector('input[name="personalLoan"]:checked');
+
+      if (!hasHomeLoan) {
+        showError('住宅ローンの有無を選択してください');
+        return false;
+      }
+      if (!personalLoan) {
+        showError('カードローン・キャッシング利用を選択してください');
+        return false;
+      }
+      return true;
+    }
+
+    // STEP5 バリデーション
+    function validateStep5() {
+      const taxStatus = document.querySelector('input[name="taxStatus"]:checked');
+      const siStatus = document.querySelector('input[name="siStatus"]:checked');
+      const otherLoan = document.querySelector('input[name="otherLoan"]:checked');
+      const rejectionHistory = document.querySelector('input[name="rejectionHistory"]:checked');
+      const recentApplications = document.querySelector('input[name="recentApplications"]:checked');
+      const noRecentApplication = document.getElementById('noRecentApplication').checked;
+
+      if (!taxStatus) {
+        showError('税金の滞納状況を選択してください');
+        return false;
+      }
+      if (!siStatus) {
+        showError('社会保険の滞納状況を選択してください');
+        return false;
+      }
+      if (!otherLoan) {
+        showError('他社からの借入状況を選択してください');
+        return false;
+      }
+      if (!rejectionHistory) {
+        showError('他社での否決歴を選択してください');
+        return false;
+      }
+      if (!recentApplications) {
+        showError('直近3ヶ月以内の他行申込を選択してください');
+        return false;
+      }
+      if (!noRecentApplication) {
+        showError('「過去6ヶ月以内に当社経由で申込をしていません」にチェックを入れてください');
+        return false;
+      }
+      return true;
+    }
+
     function goToStep(n) {
+      // 現在のSTEPを特定
+      let currentStep = 0;
+      for (let i = 1; i <= 5; i++) {
+        if (document.getElementById('step' + i).classList.contains('active')) {
+          currentStep = i;
+          break;
+        }
+      }
+
+      // 進む場合のみバリデーション
+      if (n > currentStep) {
+        if (currentStep === 1 && !validateStep1()) return;
+        if (currentStep === 2 && !validateStep2()) return;
+        if (currentStep === 3 && !validateStep3()) return;
+        if (currentStep === 4 && !validateStep4()) return;
+      }
+
       for(let i=1;i<=5;i++) document.getElementById('step'+i).classList.remove('active');
       document.getElementById('step'+n).classList.add('active');
       window.scrollTo({top:0,behavior:'smooth'});
@@ -1834,6 +2016,9 @@
     }
 
     async function submitForm() {
+      // STEP5のバリデーション
+      if (!validateStep5()) return;
+
       let score = 100;
       const industry = document.getElementById('industry').value;
       if(['night','matching','crypto'].includes(industry)) score -= 40;
