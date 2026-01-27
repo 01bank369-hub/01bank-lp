@@ -1076,6 +1076,34 @@
       gap: 10px;
     }
 
+    /* A・B判定用スタイル */
+    .rank-notice {
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #linePhoneReservation {
+      background: linear-gradient(135deg, #06c755, #04a545) !important;
+      box-shadow: 0 4px 15px rgba(6, 199, 85, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    #linePhoneReservation:hover {
+      background: linear-gradient(135deg, #04a545, #039438) !important;
+      box-shadow: 0 6px 20px rgba(6, 199, 85, 0.4);
+      transform: translateY(-2px);
+    }
+
     .btn-primary {
       padding: 16px;
       background: var(--navy);
@@ -1750,9 +1778,21 @@
         <p>御社の状況から、当社の申込設計サポートにより審査通過の可能性を高められると判断しました。</p>
       </div>
 
-      <div class="result-cta">
-        <a href="https://lin.ee/aAisld4" target="_blank" class="btn-primary" style="display:block;text-decoration:none;text-align:center;">LINEで申込サポートを依頼する →</a>
-        
+      <div class="result-cta" id="resultCta">
+        <!-- A・B判定用CTA（電話予約フロー） -->
+        <div id="ctaRankAB" style="display:none;">
+          <div id="rankNotice" class="rank-notice" style="padding:20px;border-radius:12px;margin-bottom:20px;border-left:4px solid #4caf50;">
+          </div>
+          <a href="#" id="linePhoneReservation" class="btn-primary" style="display:block;text-decoration:none;text-align:center;background:linear-gradient(135deg,#06c755,#04a545);font-size:18px;padding:18px 24px;">
+            📞 電話で法人融資の詳細を聞く →
+          </a>
+          <p style="text-align:center;font-size:12px;color:#666;margin-top:10px;">※ 10分程度のお電話で詳細をご説明いたします</p>
+        </div>
+
+        <!-- C・D判定用CTA（相談フロー） -->
+        <div id="ctaRankCD" style="display:none;">
+          <a href="https://lin.ee/aAisld4" target="_blank" class="btn-primary" style="display:block;text-decoration:none;text-align:center;">LINEで相談する →</a>
+        </div>
       </div>
 
       <p class="result-note">
@@ -2123,6 +2163,55 @@
       document.getElementById('rankText').textContent = rankText;
       document.getElementById('resultAmount').textContent = amount;
       document.getElementById('resultMessage').innerHTML = '<p>' + message + '</p>';
+
+      // ランクに応じてCTAを切り替え
+      if(rank === 'A' || rank === 'B') {
+        document.getElementById('ctaRankAB').style.display = 'block';
+        document.getElementById('ctaRankCD').style.display = 'none';
+
+        // ランク別の通知メッセージを設定
+        const rankNotice = document.getElementById('rankNotice');
+        if(rank === 'A') {
+          rankNotice.style.background = 'linear-gradient(135deg,#e8f5e9,#c8e6c9)';
+          rankNotice.style.borderLeftColor = '#4caf50';
+          rankNotice.innerHTML = '<p style="margin:0 0 10px;font-weight:bold;color:#2e7d32;font-size:18px;">🎉 おめでとうございます！A判定です</p><p style="margin:0;color:#333;font-size:14px;line-height:1.6;">御社は当社サポートにより<strong>高い確率で融資を受けられる可能性</strong>があります。<br>次のステップとして、担当者より<strong>サービス内容と手数料のご説明</strong>をさせていただきます。</p>';
+        } else {
+          rankNotice.style.background = 'linear-gradient(135deg,#e3f2fd,#bbdefb)';
+          rankNotice.style.borderLeftColor = '#2196f3';
+          rankNotice.innerHTML = '<p style="margin:0 0 10px;font-weight:bold;color:#1565c0;font-size:18px;">👍 B判定です</p><p style="margin:0;color:#333;font-size:14px;line-height:1.6;">御社は当社サポートにより<strong>融資を受けられる可能性</strong>があります。<br>次のステップとして、担当者より<strong>サービス内容と手数料のご説明</strong>をさせていただきます。</p>';
+        }
+
+        // 会社情報を取得してLINE URLを生成
+        const companyName = document.getElementById('companyName').value.trim();
+        const representativeName = document.getElementById('representativeName').value.trim();
+        const corporateNumber = document.getElementById('corporateNumber').value.trim();
+
+        // LINE公式アカウントに戻るリンクを設定（電話予約メッセージ付き）
+        const phoneReservationMsg = encodeURIComponent(
+          '【' + rank + '判定・電話予約希望】\n\n' +
+          '診断結果：' + rank + '判定（' + rankText + '）\n' +
+          '法人名：' + companyName + '\n' +
+          '代表者名：' + representativeName + '\n' +
+          '法人番号：' + corporateNumber + '\n\n' +
+          '法人融資の詳細について電話での説明を希望します。\n' +
+          'ご都合の良い日時をお知らせください。'
+        );
+
+        // LINE公式アカウントを開く（メッセージ付き）
+        const lineOAId = '@906mimkc';
+        const lineMessageUrl = 'https://line.me/R/oaMessage/' + lineOAId + '/?text=' + phoneReservationMsg;
+
+        document.getElementById('linePhoneReservation').href = lineMessageUrl;
+        document.getElementById('linePhoneReservation').onclick = function(e) {
+          if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            e.preventDefault();
+            window.location.href = lineMessageUrl;
+          }
+        };
+      } else {
+        document.getElementById('ctaRankAB').style.display = 'none';
+        document.getElementById('ctaRankCD').style.display = 'block';
+      }
 
       // API送信
       const formData = collectFormData();
