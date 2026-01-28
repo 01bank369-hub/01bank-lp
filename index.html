@@ -1734,14 +1734,6 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="checkbox-row" onclick="toggleCheck(this)">
-          <input type="checkbox" id="noRecentApplication">
-          <div class="checkbox-box"></div>
-          <span class="checkbox-label">過去6ヶ月以内に当社経由で申込をしていません</span>
-        </label>
-      </div>
-
       <div class="form-nav">
         <button class="btn-back" onclick="goToStep(4)">戻る</button>
         <button class="btn-next" onclick="submitForm()">診断結果を見る →</button>
@@ -1951,7 +1943,6 @@
       const otherLoan = document.querySelector('input[name="otherLoan"]:checked');
       const rejectionHistory = document.querySelector('input[name="rejectionHistory"]:checked');
       const recentApplications = document.querySelector('input[name="recentApplications"]:checked');
-      const noRecentApplication = document.getElementById('noRecentApplication').checked;
 
       if (!taxStatus) {
         showError('税金の滞納状況を選択してください');
@@ -1971,10 +1962,6 @@
       }
       if (!recentApplications) {
         showError('直近3ヶ月以内の他行申込を選択してください');
-        return false;
-      }
-      if (!noRecentApplication) {
-        showError('「過去6ヶ月以内に当社経由で申込をしていません」にチェックを入れてください');
         return false;
       }
       return true;
@@ -2050,8 +2037,7 @@
         siStatus: getRadio('siStatus'),
         otherLoan: getRadio('otherLoan'),
         rejectionHistory: getRadio('rejectionHistory'),
-        recentApplications: getRadio('recentApplications'),
-        noRecentApplication: document.getElementById('noRecentApplication')?.checked || false
+        recentApplications: getRadio('recentApplications')
       };
     }
 
@@ -2130,8 +2116,6 @@
         if(recentApplications.value==='multiple') score -= 30;
         else if(recentApplications.value==='one') score -= 10;
       }
-
-      if(!document.getElementById('noRecentApplication').checked) score -= 20;
 
       let rank, rankText, amount, message;
       if(score >= 80) {
